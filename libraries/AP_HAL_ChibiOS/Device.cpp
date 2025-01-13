@@ -1,3 +1,5 @@
+// ***EDITED BY MCKENZIE***
+
 /*
  * This file is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -111,6 +113,11 @@ AP_HAL::Device::PeriodicHandle DeviceBus::register_periodic_callback(uint32_t pe
         // setup a name for the thread
         const uint8_t name_len = 7;
         char *name = (char *)malloc(name_len);
+        // ***ADDED from 4.5.7***
+        if (name == nullptr){
+            return nullptr;
+        }
+        // ***END ADD***
         switch (hal_device->bus_type()) {
         case AP_HAL::Device::BUS_TYPE_I2C:
             snprintf(name, name_len, "I2C%u",
@@ -204,3 +211,4 @@ void DeviceBus::bouncebuffer_finish(const uint8_t *buf_tx, uint8_t *buf_rx, uint
 }
 
 #endif // HAL_USE_I2C || HAL_USE_SPI
+
