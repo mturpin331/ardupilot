@@ -1,3 +1,4 @@
+// ***EDITTED BY MCKENZIE***
 
 #include <AP_HAL/AP_HAL_Boards.h>
 #include "AP_Periph.h"
@@ -95,6 +96,8 @@ const AP_Param::Info AP_Periph_FW::var_info[] = {
     GSCALAR(can_slcan_cport, "CAN_SLCAN_CPORT", 1),
 #endif
 
+// ***Leaving out the "enable CAN software termination" for CAN 1,2,3***
+
 #if HAL_NUM_CAN_IFACES >= 2
     // @Param: CAN_PROTOCOL
     // @DisplayName: Enable use of specific protocol to be used on this port
@@ -102,7 +105,7 @@ const AP_Param::Info AP_Periph_FW::var_info[] = {
     // @Values: 0:Disabled,1:UAVCAN,4:PiccoloCAN,5:CANTester,6:EFI_NWPMU,7:USD1,8:KDECAN
     // @User: Advanced
     // @RebootRequired: True
-    GARRAY(can_protocol,     0, "CAN_PROTOCOL", AP_CANManager::Driver_Type_UAVCAN),
+    GARRAY(can_protocol,     0, "CAN_PROTOCOL", AP_CANManager::Driver_Type_UAVCAN), // ***Different from 4.5.7, leaving as UAVCAN for simplicity***
     
     // @Param: CAN2_BAUDRATE
     // @DisplayName: Bitrate of CAN2 interface
@@ -118,7 +121,7 @@ const AP_Param::Info AP_Periph_FW::var_info[] = {
     // @Values: 0:Disabled,1:UAVCAN,4:PiccoloCAN,5:CANTester,6:EFI_NWPMU,7:USD1,8:KDECAN
     // @User: Advanced
     // @RebootRequired: True
-    GARRAY(can_protocol,     1, "CAN2_PROTOCOL", AP_CANManager::Driver_Type_UAVCAN),
+    GARRAY(can_protocol,     1, "CAN2_PROTOCOL", AP_CANManager::Driver_Type_UAVCAN), // ***Different from 4.5.7, leaving as UAVCAN for simplicity***
 #endif
 
 #if HAL_NUM_CAN_IFACES >= 3
@@ -136,7 +139,7 @@ const AP_Param::Info AP_Periph_FW::var_info[] = {
     // @Values: 0:Disabled,1:UAVCAN,4:PiccoloCAN,5:CANTester,6:EFI_NWPMU,7:USD1,8:KDECAN
     // @User: Advanced
     // @RebootRequired: True
-    GARRAY(can_protocol,    2, "CAN3_PROTOCOL", AP_CANManager::Driver_Type_UAVCAN),
+    GARRAY(can_protocol,    2, "CAN3_PROTOCOL", AP_CANManager::Driver_Type_UAVCAN), //Different from 4.5.7, leaving as UAVCAN for simplicity***
 #endif
 
 #if HAL_CANFD_SUPPORTED
@@ -232,6 +235,9 @@ const AP_Param::Info AP_Periph_FW::var_info[] = {
     // @Group: BATT
     // @Path: ../libraries/AP_BattMonitor/AP_BattMonitor.cpp
     GOBJECT(battery, "BATT", AP_BattMonitor),
+
+    // ***skipping BATT_HIDE_MASK***
+
 #endif
 
 #ifdef HAL_PERIPH_ENABLE_MAG
@@ -291,6 +297,8 @@ const AP_Param::Info AP_Periph_FW::var_info[] = {
     // @RebootRequired: True
     GSCALAR(rangefinder_port, "RNGFND_PORT", AP_PERIPH_RANGEFINDER_PORT_DEFAULT),
 
+    // ***skipping extra number of rangefinders***
+
     // @Param: RNGFND_MAX_RATE
     // @DisplayName: Rangefinder max rate
     // @Description: This is the maximum rate we send rangefinder data in Hz. Zero means no limit
@@ -343,7 +351,7 @@ const AP_Param::Info AP_Periph_FW::var_info[] = {
     GSCALAR(hardpoint_rate, "HARDPOINT_RATE", 100),
 #endif
 
-#ifdef HAL_PERIPH_ENABLE_HWESC
+#ifdef HAL_PERIPH_ENABLE_HWESC // ***skipping addition of enable_esc_apd***
     // @Param: ESC_NUMBER
     // @DisplayName: ESC number
     // @Description: This is the ESC number to report as in UAVCAN ESC telemetry feedback packets.
@@ -357,6 +365,8 @@ const AP_Param::Info AP_Periph_FW::var_info[] = {
     // @Group: OUT
     // @Path: ../libraries/SRV_Channel/SRV_Channels.cpp
     GOBJECT(servo_channels, "OUT",     SRV_Channels),
+
+    /// ***skipping addition of ESC_RATE***
 
     // @Param: ESC_PWM_TYPE
     // @DisplayName: Output PWM type
@@ -441,6 +451,8 @@ const AP_Param::Info AP_Periph_FW::var_info[] = {
     // @User: Advanced
     GSCALAR(sysid_this_mav,         "SYSID_THISMAV",  MAV_SYSTEM_ID),
 
+    // ***skipping added if statement for show_serial_manager_params***
+
     // @Group: SERIAL
     // @Path: ../libraries/AP_SerialManager/AP_SerialManager.cpp
     GOBJECT(serial_manager, "SERIAL",   AP_SerialManager),
@@ -483,7 +495,7 @@ const AP_Param::Info AP_Periph_FW::var_info[] = {
     GOBJECT(efi, "EFI", AP_EFI),
 #endif
 
-#ifdef HAL_PERIPH_ENABLE_PRX
+#ifdef HAL_PERIPH_ENABLE_PRX // ***label changed in 4.5.7***
     // @Param: PRX_BAUDRATE
     // @DisplayName: Proximity Sensor serial baudrate
     // @Description: Proximity Sensor serial baudrate.
@@ -522,6 +534,17 @@ const AP_Param::Info AP_Periph_FW::var_info[] = {
     // @Path: ../libraries/AP_NMEA_Output/AP_NMEA_Output.cpp
     GOBJECT(nmea, "NMEA_",   AP_NMEA_Output),
 #endif
+
+// ***skipping all extra variable definitions***
+
+#ifdef HAL_PERIPH_ENABLE_RCIN
+    // @Group: RC
+    // @Path: rc_in.cpp
+    GOBJECT(g_rcin, "RC",  Parameters_RCIN),
+#endif
+
+// ***skipping all extra variable definitions***
+// ***might add CAN_MIRROR later?***
 
     AP_VAREND
 };
