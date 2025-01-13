@@ -1,3 +1,5 @@
+// ***FILE EDITTED BY MCKENZIE***
+
 /*
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -35,6 +37,15 @@
 #define HAL_PERIPH_HWESC_SERIAL_PORT 3
 #endif
 
+// ***ADDED from 4.5.7
+// not only will the code not compile without features this enables,
+// but it forms part of a series of measures to give a robust recovery
+// mechanism on AP_Periph if a bad flash occurs.
+#ifndef AP_CHECK_FIRMWARE_ENABLED
+#error AP_CHECK_FIRMWARE_ENABLED must be enabled
+#endif
+// ***END ADD
+
 extern const AP_HAL::HAL &hal;
 
 AP_Periph_FW periph;
@@ -63,7 +74,7 @@ static uint32_t start_ms;
 
 AP_Periph_FW::AP_Periph_FW()
 #if HAL_LOGGING_ENABLED
-    : logger(g.log_bitmask)
+    : logger(g.log_bitmask) // ***if statement not in 4.5.7***
 #endif
 {
     if (_singleton != nullptr) {
@@ -106,6 +117,12 @@ void AP_Periph_FW::init()
 #endif
     serial_manager.init();
 
+// ***ADDED from 4.5.7***
+#ifdef HAL_PERIPH_ENABLE_NETWORKING
+    networking_periph.init();
+#endif
+// ***END ADD***
+
 #if HAL_GCS_ENABLED
     gcs().setup_console();
     gcs().setup_uarts();
@@ -136,6 +153,12 @@ void AP_Periph_FW::init()
     node_stats.init();
 #endif
 
+// ***ADDED from 4.5.7***
+#ifdef HAL_PERIPH_ENABLE_SERIAL_OPTIONS
+    serial_options.init();
+#endif
+// ***END ADD***
+
 #ifdef HAL_PERIPH_ENABLE_GPS
     if (gps.get_type(0) != AP_GPS::GPS_Type::GPS_TYPE_NONE && g.gps_port >= 0) {
         serial_manager.set_protocol_and_baud(g.gps_port, AP_SerialManager::SerialProtocol_GPS, AP_SERIALMANAGER_GPS_BAUD);
@@ -155,9 +178,17 @@ void AP_Periph_FW::init()
     baro.init();
 #endif
 
+// ***skipping IMU***
+
 #ifdef HAL_PERIPH_ENABLE_BATTERY
     battery.lib.init();
 #endif
+
+// ***ADDED FROM 4.5.7***
+#ifdef HAL_PERIPH_ENABLE_RCIN
+    rcin_init();
+#endif
+// ***END ADD***
 
 #if defined(HAL_PERIPH_NEOPIXEL_COUNT_WITHOUT_NOTIFY) || defined(HAL_PERIPH_ENABLE_RC_OUT)
     hal.rcout->init();
@@ -185,6 +216,8 @@ void AP_Periph_FW::init()
         }
     }
 #endif
+
+// ***skipping KDECAN***
     
 #ifdef HAL_PERIPH_ENABLE_AIRSPEED
 #if CONFIG_HAL_BOARD == HAL_BOARD_CHIBIOS
@@ -238,6 +271,8 @@ void AP_Periph_FW::init()
     hwesc_telem.init(hal.serial(HAL_PERIPH_HWESC_SERIAL_PORT));
 #endif
 
+// ***skipping enable_es_apd***
+
 #ifdef HAL_PERIPH_ENABLE_MSP
     if (g.msp_port >= 0) {
         msp_init(hal.serial(g.msp_port));
@@ -255,6 +290,8 @@ void AP_Periph_FW::init()
 #ifdef HAL_PERIPH_ENABLE_NOTIFY
     notify.init();
 #endif
+
+// ***skipping enable relay***
 
 #if AP_SCRIPTING_ENABLED
     scripting.init();
@@ -380,7 +417,7 @@ void AP_Periph_FW::update()
 #ifdef HAL_PERIPH_ENABLE_BARO
         hal.serial(0)->printf("BARO H=%u P=%.2f T=%.2f\n", baro.healthy(), baro.get_pressure(), baro.get_temperature());
 #endif
-#ifdef HAL_PERIPH_ENABLE_RANGEFINDER
+#ifdef HAL_PERIPH_ENABLE_RANGEFINDER // ***skipping rangefinder additions***
         hal.serial(0)->printf("RNG %u %ucm\n", rangefinder.num_sensors(), rangefinder.distance_cm_orient(ROTATION_NONE));
 #endif
         hal.scheduler->delay(1);
@@ -436,6 +473,12 @@ void AP_Periph_FW::update()
     }
 #endif
 
+// ***ADDED from 4.5.7***
+#ifdef HAL_PERIPH_ENABLE_RCIN
+    rcin_update();
+#endif
+// ***END ADD***
+
     static uint32_t fiftyhz_last_update_ms;
     if (now - fiftyhz_last_update_ms >= 20) {
         // update at 50Hz
@@ -456,6 +499,8 @@ void AP_Periph_FW::update()
 #if AP_TEMPERATURE_SENSOR_ENABLED
     temperature_sensor.update();
 #endif
+
+// ***skipping RPM***
 
 #if HAL_LOGGING_ENABLED
     logger.periodic_tasks();
@@ -543,6 +588,17 @@ void AP_Periph_FW::prepare_reboot()
         // the IO board safety to be forced on, the parameters to flush,
         hal.scheduler->delay(40);
 }
+
+// ***ADDED FROM 4.5.7***
+/*
+  reboot, optionally holding in bootloader. For scripting
+ */
+void AP_Periph_FW::reboot(bool hold_in_bootloader)
+{
+    prepare_reboot();
+    hal.scheduler->reboot(hold_in_bootloader);
+}
+// ***END ADD***
 
 AP_Periph_FW *AP_Periph_FW::_singleton;
 
