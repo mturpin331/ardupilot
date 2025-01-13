@@ -1,5 +1,8 @@
+// ***FILE EDITTED BY MCKENZIE***
+
 #pragma once
 
+// ***skipping irrelevant includes/ifs***
 #include <AP_HAL/AP_HAL.h>
 #include <AP_Param/AP_Param.h>
 #include <AP_GPS/AP_GPS.h>
@@ -23,6 +26,10 @@
 #include <AP_Scripting/AP_Scripting.h>
 #include <AP_HAL/CANIface.h>
 #include <AP_Stats/AP_Stats.h>
+// ***ADDED from 4.5.7***
+#include <AP_RCProtocol/AP_RCProtocol_config.h>
+#include "rc_in.h"
+// ***END ADD***
 
 
 #include <AP_NMEA_Output/AP_NMEA_Output.h>
@@ -251,6 +258,18 @@ public:
     void rcout_handle_safety_state(uint8_t safety_state);
 #endif
 
+// ***ADDED from 4.5.7***
+#ifdef HAL_PERIPH_ENABLE_RCIN
+    void rcin_init();
+    void rcin_update();
+    void can_send_RCInput(uint8_t quality, uint16_t *values, uint8_t nvalues, bool in_failsafe, bool quality_valid);
+    bool rcin_initialised;
+    uint32_t rcin_last_sent_RCInput_ms;
+    const char *rcin_rc_protocol;  // protocol currently being decoded
+    Parameters_RCIN g_rcin;
+#endif
+// ***END ADD***
+
 #if AP_TEMPERATURE_SENSOR_ENABLED
     AP_TemperatureSensor temperature_sensor;
 #endif
@@ -312,6 +331,8 @@ public:
     static bool no_iface_finished_dna;
     static constexpr auto can_printf = ::can_printf;
 };
+
+// ***skipping debug, dronecan hopping stuff***
 
 namespace AP
 {
