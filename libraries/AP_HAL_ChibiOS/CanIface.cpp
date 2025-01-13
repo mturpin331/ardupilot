@@ -1,3 +1,5 @@
+// ***EDITED BY MCKENZIE***
+
 /*
  * The MIT License (MIT)
  *
@@ -292,6 +294,7 @@ int16_t CANIface::send(const AP_HAL::CANFrame& frame, uint64_t tx_deadline,
     if (frame.isErrorFrame() || frame.dlc > 8) {
         return -1;
     }
+     PERF_STATS(stats.tx_requests); // ***ADDED from 4.5.7
 
     /*
      * Normally we should perform the same check as in @ref canAcceptNewTxFrame(), because
@@ -326,6 +329,7 @@ int16_t CANIface::send(const AP_HAL::CANFrame& frame, uint64_t tx_deadline,
             PERF_STATS(stats.tx_rejected);
             return 0;       // No transmission for you.
         }
+        // ***skipping addition that allows MAVCAN to operate when no cable is plugged into CAN***
 
         /*
          * Setting up the mailbox
@@ -493,6 +497,11 @@ void CANIface::handleTxMailboxInterrupt(uint8_t mailbox_index, bool txok, const 
     if (txok && !txi.pushed) {
         txi.pushed = true;
         PERF_STATS(stats.tx_success);
+// ***ADDED from 4.5.7***
+#if !defined(HAL_BOOTLOADER_BUILD)
+        stats.last_transmit_us = timestamp_us;
+#endif
+// ***END ADD***
     }
 }
 
@@ -520,6 +529,7 @@ void CANIface::handleTxInterrupt(const uint64_t utc_usec)
         PERF_STATS(stats.num_events);
         evt_src_.signalI(1 << self_index_);
     }
+    // ***skipping switch from event to sem***
 #endif
     pollErrorFlagsFromISR();
 }
@@ -588,6 +598,7 @@ void CANIface::handleRxInterrupt(uint8_t fifo_index, uint64_t timestamp_us)
         PERF_STATS(stats.num_events);
         evt_src_.signalI(1 << self_index_);
     }
+    // ***skipping switch from event to sem***
 #endif
     pollErrorFlagsFromISR();
 }
@@ -706,6 +717,7 @@ bool CANIface::set_event_handle(AP_HAL::EventHandle* handle)
 }
 
 #endif // #if CH_CFG_USE_EVENTS == TRUE
+// ***skipping switch from event to sem***
 
 void CANIface::checkAvailable(bool& read, bool& write, const AP_HAL::CANFrame* pending_tx) const
 {
@@ -752,6 +764,7 @@ bool CANIface::select(bool &read, bool &write,
         time = AP_HAL::micros64();
     }
 #endif // #if !defined(HAL_BUILD_AP_PERIPH) && !defined(HAL_BOOTLOADER_BUILD)
+// ***skipping switch from event to sem***
     return true;
 }
 
