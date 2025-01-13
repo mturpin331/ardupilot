@@ -1,3 +1,5 @@
+// ***EDITED BY MCKENZIE***
+
 /*
  * The MIT License (MIT)
  *
@@ -112,6 +114,7 @@ class ChibiOS::CANIface : public AP_HAL::CANIface
 #if CH_CFG_USE_EVENTS == TRUE
     AP_HAL::EventHandle* event_handle_;
     static ChibiOS::EventSource evt_src_;
+    // ***skipping change from event to sem***
 #endif
     const uint8_t self_index_;
 
@@ -214,6 +217,7 @@ public:
     // setup event handle for waiting on events
     bool set_event_handle(AP_HAL::EventHandle* handle) override;
 #endif
+// ***skipping change from event to sem***
 #if !defined(HAL_BUILD_AP_PERIPH) && !defined(HAL_BOOTLOADER_BUILD)
     // fetch stats text and return the size of the same,
     // results available via @SYS/can0_stats.txt or @SYS/can1_stats.txt 
