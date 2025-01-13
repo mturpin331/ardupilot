@@ -1,3 +1,5 @@
+// ***EDITED BY MCKENZIE***
+
 #pragma once
 
 #include <AP_Common/AP_Common.h>
@@ -30,8 +32,8 @@ public:
         k_param_hardpoint_id,
         k_param_hardpoint_rate,
         k_param_baro_enable,
-        k_param_esc_number,
-        k_param_battery,
+        k_param_esc_number, // ***name change in 4.5.7***
+        k_param_battery, // ***name change in 4.5.7***
         k_param_debug,
         k_param_serial_number,
         k_param_adsb_port,
@@ -70,6 +72,38 @@ public:
         k_param_proximity_port,
         k_param_proximity_max_rate,
         k_param_nmea,
+
+        // ***adding all extra parameters
+
+        k_param_kdecan,
+        k_param_pole_count0,
+        k_param_esc_serial_port0,
+        k_param_esc_number1,
+        k_param_pole_count1,
+        k_param_esc_serial_port1,
+        k_param_networking_periph,
+        k_param_rpm_sensor,
+        k_param_g_rcin,
+        k_param_sitl,
+        k_param_ahrs,
+        k_param_battery_balance,
+        k_param_battery_hide_mask,
+        k_param_can_mirror_ports,
+        k_param_rtc,
+        k_param_can_terminate0,
+        k_param_can_terminate1,
+        k_param_can_terminate2,
+        k_param_serial_options,
+        k_param_relay,
+        k_param_temperature_msg_rate,
+        k_param_rangefinder_baud1,
+        k_param_rangefinder_port1,
+        k_param_options,
+        k_param_rpm_msg_rate,
+        k_param_esc_rate,
+        k_param_esc_extended_telem_rate,
+        k_param_imu_sample_rate,
+        k_param_imu,
     };
 
     AP_Int16 format_version;
@@ -98,12 +132,12 @@ public:
 #endif
 
 #ifdef HAL_PERIPH_ENABLE_RANGEFINDER
-    AP_Int32 rangefinder_baud;
+    AP_Int32 rangefinder_baud; // ***skipping multiple instances of rangefinder***
     AP_Int8 rangefinder_port;
     AP_Int16 rangefinder_max_rate;
 #endif
 
-#ifdef HAL_PERIPH_ENABLE_PRX
+#ifdef HAL_PERIPH_ENABLE_PRX // ***name change in 4.5.7***
     AP_Int32 proximity_baud;
     AP_Int8 proximity_port;
     AP_Int16 proximity_max_rate;
@@ -120,7 +154,7 @@ public:
     AP_Int8 hardpoint_rate;
 #endif
 
-#ifdef HAL_PERIPH_ENABLE_HWESC
+#ifdef HAL_PERIPH_ENABLE_HWESC // ***skipping addition of enable_esc_apd***
     AP_Int8 esc_number;
 #endif
 
@@ -157,6 +191,8 @@ public:
 #if HAL_GCS_ENABLED
     AP_Int16 sysid_this_mav;
 #endif
+
+// ***skipping all irrelevant params***
 
 #ifdef HAL_PERIPH_ENABLE_EFI
     AP_Int32 efi_baudrate;
